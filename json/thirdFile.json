@@ -1,0 +1,30 @@
+{
+  "Asia": {
+    "population": 3129.2899999999995,
+    "gdp": 19945.469999999998
+  },
+  "Australia": {
+    "population": 23.05,
+    "gdp": 1589.12
+  },
+  "North America": {
+    "population": 151.23,
+    "gdp": 3118.7200000000003
+  },
+  "South America": {
+    "population": 558.22,
+    "gdp": 19193.11
+  },
+  "Europe": {
+    "population": 411.65,
+    "gdp": 13049.74
+  },
+  "Africa": {
+    "population": 51.81,
+    "gdp": 375.99
+  },
+  "Antartica": {
+    "population": 0,
+    "gdp": 0
+  }
+}

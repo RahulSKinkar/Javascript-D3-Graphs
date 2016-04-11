@@ -1,0 +1,203 @@
+
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Assignment 2</title>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script src="../js/d3.min.js"></script><!--to include d3 library file-->
+  </head>
+  <body>
+    <script>
+      var outerWidth=1400;
+      var outerHeight=600;
+      var barPadding= 0.2;
+      var margin={left:120, top:30, right:90, bottom:150};
+      var xAxisLabel="Country Name";
+      var yAxisLabel="Purchasing Power (in Lakhs) from 2010 to 2013";
+
+      var innerWidth= outerWidth -margin.left - margin.right;
+      var innerHeight= outerHeight -margin.top - margin.bottom;
+
+      var svg= d3.select("body").append("svg")
+            .attr("width",outerWidth)
+            .attr("height",outerHeight);
+
+      var g= svg.append("g")
+        .attr("transform", "translate(" +margin.left + "," + margin.top + ")");
+
+      var xAxisG =g.append("g")
+        .attr("transform", "translate(0," +innerHeight+")");
+      var yAxisG = g.append("g");
+      var yAxisG1 = g.append("g");
+      var stack1G= g.append("g");
+      var stack2G= g.append("g");
+      var stack3G= g.append("g");
+      var stack4G= g.append("g");
+      var stack2AG= g.append("g");
+      var stack3AG= g.append("g");
+      var stack4AG= g.append("g");
+      var menuG=g.append("g");
+
+      var xScale= d3.scale.ordinal().rangeBands([0, innerWidth], barPadding);
+      var xScale1= d3.scale.ordinal().rangeBands([0, innerWidth],barPadding);
+      var yScale= d3.scale.linear().range([innerHeight, 0]);
+      var yScale1= d3.scale.linear().range([innerHeight, 0]);
+
+      var xAxis= d3.svg.axis().scale(xScale).orient("bottom");
+      var yAxis= d3.svg.axis().scale(yScale).orient("left");
+      var yAxis1= d3.svg.axis().scale(yScale1).orient("right");
+      var menuData={
+                    0:  ["Period 2010 to 2011","#8FBC8F"],
+                    1:  ["Period 2011 to 2012","#ADD8E6"],
+                    2:  ["Period 2011 to 2013","#FFA07A"],
+                    3:  ["Growth in Population (in Lakhs)","#006400"],
+                    4:  ["Growth in GDP (in Millions)", "#808000"]
+                    };
+
+      function render(data){
+        xScale.domain(       data.map( function(d){ return d.name; }));
+        xScale1.domain(       data.map( function(d){ return d.name; }));
+        yScale.domain([0, d3.max(data, function(d){ return d.stack2+d.stack3+d.stack4})]);//to get max value of yColumn;
+        yScale1.domain([0, d3.max(data, function(d){ return d.stack2a+d.stack3a+d.stack4a})]);
+        console.log(d3.max(data, function(d){ return d.stack2a+d.stack3a+d.stack4a}));
+        xAxisG.call(xAxis);
+        xAxisG.selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)" );
+
+        yAxisG.call(yAxis);
+        yAxisG.style("fill",menuData[String(3)][1]);
+        yAxisG1.call(yAxis1);
+        yAxisG1.style("fill",menuData[String(4)][1])
+        .attr("transform", "translate(" +((innerWidth)) + "," + (0) + ")");
+
+        yAxisG.append("text").text(menuData[String(3)][0])
+          .attr("transform", "translate(" +(-70) + "," + (innerHeight-150) + ") rotate(270)");
+        yAxisG1.append("text").text(menuData[String(4)][0])
+          .attr("transform", "translate(" +((margin.right-20)) + "," + (innerHeight-170) + ") rotate(270)");
+
+        xAxisG.append("text").text(xAxisLabel)
+          .attr("transform", "translate(" +((innerWidth)-150 ) + "," + (outerHeight-innerHeight-40) + ")");
+
+
+        var barsStack2= stack2G.selectAll("rect").data(data);
+
+        barsStack2.enter().append("rect")
+          .attr("width", xScale.rangeBand()/3)
+          .attr("fill",menuData[String(0)][1])
+          .attr("stroke",menuData[String(3)][1])
+          .attr("stroke-width","2px");
+        barsStack2
+          .attr("x", function(d){ return xScale(d.name);})
+          .attr("y", function(d){ return yScale(d.stack2);})
+          .attr("height", function(d){ return innerHeight - yScale(d.stack2);});
+
+        var barsStack3= stack3G.selectAll("rect").data(data);
+
+        barsStack3.enter().append("rect")
+          .attr("width", xScale.rangeBand()/3)
+          .attr("fill", menuData[String(1)][1])
+          .attr("stroke",menuData[String(3)][1])
+          .attr("stroke-width","2px");
+        barsStack3
+          .attr("x", function(d){ return xScale(d.name);})
+          .attr("y", function(d){ return yScale(d.stack2+d.stack3);})
+          .attr("height", function(d){ return innerHeight - yScale(d.stack3);});
+
+        var barsStack4= stack4G.selectAll("rect").data(data);
+
+        barsStack4.enter().append("rect")
+          .attr("width", xScale.rangeBand()/3)
+          .attr("fill", menuData[String(2)][1])
+          .attr("stroke",menuData[String(3)][1])
+          .attr("stroke-width","2px");
+        barsStack4
+          .attr("x", function(d){ return xScale(d.name);})
+          .attr("y", function(d){ return yScale(d.stack2+d.stack3+d.stack4);})
+          .attr("height", function(d){ return innerHeight - yScale(d.stack4);});
+
+        var barsStack2a= stack2AG.selectAll("rect").data(data);
+          barsStack2a.enter().append("rect")
+          .attr("width", xScale.rangeBand()/3)
+          .attr("fill",menuData[String(0)][1])
+          .attr("stroke",menuData[String(4)][1])
+          .attr("stroke-width","2px");
+        barsStack2a
+          .attr("x", function(d){ return xScale1(d.name)+20;})
+          .attr("y", function(d){ return yScale1(d.stack2a);})
+          .attr("height", function(d){ return innerHeight - yScale1(d.stack2a);});
+
+        var barsStack3a= stack3AG.selectAll("rect").data(data);
+
+        barsStack3a.enter().append("rect")
+          .attr("width", xScale.rangeBand()/3)
+          .attr("fill", menuData[String(1)][1])
+          .attr("stroke",menuData[String(4)][1])
+          .attr("stroke-width","2px");
+        barsStack3a
+          .attr("x", function(d){ return xScale1(d.name)+20;})
+          .attr("y", function(d){ return yScale1(d.stack2a+d.stack3a);})
+          .attr("height", function(d){ return innerHeight - yScale1(d.stack3a);});
+
+        var barsStack4a= stack4AG.selectAll("rect").data(data);
+
+        barsStack4a.enter().append("rect")
+          .attr("width", xScale.rangeBand()/3)
+          .attr("fill", menuData[String(2)][1])
+          .attr("stroke",menuData[String(4)][1])
+          .attr("stroke-width","2px");
+        barsStack4a
+          .attr("x", function(d){ return xScale1(d.name)+20;})
+          .attr("y", function(d){ return yScale1(d.stack2a+d.stack3a+d.stack4a);})
+          .attr("height", function(d){ return innerHeight - yScale1(d.stack4a);});
+
+        var menu= menuG.selectAll("rect").data(data)
+            .enter()
+            .append('g')
+            .each(function(d,i){
+              if(i>2){return;}
+              var legendMenu=d3.select(this);
+              legendMenu.attr("class","legend")
+              legendMenu.append("rect")
+              .attr("id","legend"+i)
+              .attr("width", 10)
+              .attr("x", innerWidth- margin.right - 85)
+              .attr("y", i*25 + 10)
+              .attr("height",10)
+              .style("fill",menuData[String(i)][1]);
+
+              legendMenu.append("text")
+               .attr("x", innerWidth - margin.right -70)
+               .attr("y", i*25 + 20)
+               .attr("height",30)
+               .attr("width",100)
+               .style("fill",menuData[String(i)][1])
+               .text(menuData[String(i)][0]);
+               console.log(menuData[String(i)][0]);
+
+
+            });//end each
+
+      }// end render
+
+      d3.json("../json/secondFile.json",function(data){
+        data.forEach(function(data){
+          data.stack1= +data.stack1;
+          data.stack2= +data.stack2;
+          data.stack3= +data.stack3;
+          data.stack4= +data.stack4;
+          data.stack1a= +data.stack1a;
+          data.stack2a= +data.stack2a;
+          data.stack3a= +data.stack3a;
+          data.stack4a= +data.stack4a;
+          return data;
+        });
+        render(data);
+      });
+    </script>
+
+  </body>
+</html>

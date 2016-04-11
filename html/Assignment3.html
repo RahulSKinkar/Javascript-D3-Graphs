@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Assignment 3</title>
+    <link rel="stylesheet" href="../css/style.css"/>
+    <script src="../js/d3.min.js"></script><!--to include d3 library file-->
+  </head>
+  <body>
+    <script>
+      var outerWidth=1400;
+      var outerHeight=600;
+      var barPadding= 0.7;
+      var margin={left:90, top:30, right:90, bottom:150};
+      var innerWidth= outerWidth -margin.left - margin.right;
+      var innerHeight= outerHeight -margin.top - margin.bottom;
+
+      var svg= d3.select("body").append("svg")//to include svg element
+            .attr("width",outerWidth)
+            .attr("height",outerHeight);
+
+      var g= svg.append("g") //to append main g group element
+        .attr("transform", "translate(" +margin.left + "," + margin.top + ")");
+
+      var xAxisG =g.append("g")
+        .attr("transform", "translate(0," +innerHeight+")");
+      var yAxisGdpG = g.append("g");
+      var yAxisPopulationG = g.append("g");
+      var stackGdpG= g.append("g");
+      var stackPopulationG= g.append("g");
+
+      var xScale= d3.scale.ordinal().rangeBands([0, innerWidth], barPadding);
+      var yScaleGdp= d3.scale.linear().range([innerHeight, 0]);
+      var yScalePopulation= d3.scale.linear().range([innerHeight, 0]);
+
+      var xAxis= d3.svg.axis().scale(xScale).orient("bottom");
+      var yAxisGdp= d3.svg.axis().scale(yScaleGdp).orient("left");
+      var yAxisPopulation= d3.svg.axis().scale(yScalePopulation).orient("right");
+      var axisData={
+                      0:  ["GDP in Million","#2e8b57"],
+                      1:  ["Population in Lakh","#20b2aa"],
+                      2:  ["Continent Names","#234a5f"]
+                    };
+
+      function render(data){
+        var key=Object.keys(data);
+
+        xScale.domain(key);
+        yScaleGdp.domain([0,20000]);
+        yScalePopulation.domain([0,31300]);
+
+        yAxisGdpG.call(yAxisGdp)
+          .style("fill",axisData["0"][1]);
+        yAxisPopulationG.call(yAxisPopulation)
+          .style("fill",axisData["1"][1])
+          .attr("transform", "translate(" +(innerWidth) + "," + (0) + ")");
+        xAxisG.call(xAxis)
+          .style("fill",axisData["2"][1]);
+
+        yAxisGdpG.append("text").text(axisData["0"][0])
+          .attr("transform", "translate(" +(-(margin.left-20)) + "," + (innerHeight-300) + ") rotate(270)");
+        yAxisPopulationG.append("text").text(axisData["1"][0])
+          .attr("transform", "translate(" + (90) + "," + (innerHeight-280) + ") rotate(270)");
+        xAxisG.append("text").text(axisData["2"][0])
+          .attr("transform", "translate(" +((innerWidth)-150 ) + "," + (outerHeight-innerHeight-90) + ")");
+
+        for (var k in data){
+
+          barGdp= stackGdpG.append("rect")
+            .attr("width", xScale.rangeBand()/2)
+            .attr("fill",axisData[String(0)][1])
+            .attr("x", xScale(k))
+            .attr("y", yScaleGdp(data[k].gdp))
+            .attr("height", innerHeight - yScaleGdp(data[k].gdp));
+
+          barPopulation= stackPopulationG.append("rect")
+            .attr("width", xScale.rangeBand()/2)
+            .attr("fill",axisData[String(1)][1])
+            .attr("x", xScale(k)+xScale.rangeBand()/2)
+            .attr("y", yScalePopulation(data[k].population))
+            .attr("height", innerHeight - yScalePopulation(data[k].population));
+
+        }//end for
+      }// end render
+
+      d3.json("../json/thirdFile.json",function(data){
+        for(var key in data){
+          data[key].population= +data[key].population * 10;
+          data[key].gdp= +data[key].gdp;
+        };
+        render(data);
+      });
+    </script>
+
+  </body>
+</html>
